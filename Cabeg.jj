@@ -2,11 +2,11 @@
 options { LOOKAHEAD=1; FORCE_LA_CHECK=true; STATIC = false;}
 
 // Fonction principale
-PARSER_BEGIN(Jagger)
-public class Jagger
+PARSER_BEGIN(Cabeg)
+public class Cabeg
 {
 }
-PARSER_END(Jagger)
+PARSER_END(Cabeg)
 
 // Characters to ignore.
 SKIP: { " " | "\r" | "\t" }
@@ -14,9 +14,10 @@ SKIP: { " " | "\r" | "\t" }
 // Token specifications.
 TOKEN:
 {
-    < NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  // A decimal number.
+		< NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  // A decimal number.
 |   < DIGIT: ["0"-"9"] >                      // A decimal digit.
 |   < EOL: "\n" >                             // End of line.
+|		< KEYWORD: "print" >										  // Keywords.
 }
 
 // Main lopp: read expressions on a line until end of file.
@@ -43,24 +44,37 @@ Exp expression():
 }
 
 // Term.
-// T -> F ('*'F | '/'F)*
+// T -> U ('*'F | '/'F)*
 Exp term():
 { Exp a,b; }
 {
-    a=factor()
+    a=unary()
     (
-      "*" b=factor() { a = new Mul(a, b); }
-    | "/" b=factor() { a = new Div(a, b);}
+      "*" b=term() { a = new Mul(a, b); }
+    | "/" b=term() { a = new Div(a, b); }
+    |	"<" b=term() { a = new Lt(a,b); }
+    | "<=" b=term() { a = new Le(a,b); }
+    | ">" b=term() { a = new Gt(a,b); }
+    | ">=" b=term() { a = new Ge(a,b); }
+    | "==" b=term() { a = new Equal(a,b); }
     )* { return a; }
+}
+
+Exp unary():
+{
+    Exp a;
+}
+{
+    "-" a=factor()     { return new Neg(a); }
+|   "+" a=factor()		 { return a; }
+|   a=factor()         { return a; }
 }
 
 // Factor of an expression.
 // F -> <NUMBER> | "(" E ")"
-
 Exp factor():
 { Token t; Exp e; }
 {
       t=<NUMBER> { return new Num(Double.parseDouble(t.toString())); }
     | "(" e=expression() ")" { return e; }
 }
-
