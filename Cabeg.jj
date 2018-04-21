@@ -25,6 +25,7 @@ TOKEN:
 |		< RBR: ")" >
 |		< LBR: "(" >
 |		< INIT: ":=" >
+|		< COMMA: "," >
 }
 
 // Token specifications.
@@ -70,9 +71,10 @@ Scope declaration():
 void instructions():
 {}
 {
+	statement()
 	(
-		statement()
-	)+
+		<COMMA> statement()
+	)*
 }
 
 Exp ternary():

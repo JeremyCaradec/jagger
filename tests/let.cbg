@@ -2,4 +2,11 @@ let
 	var foo:=2 
 	var bar:=foo*foo 
 in 
-	print(bar+5) end
+	print(bar+5),	
+	let
+		var baz:=2
+	in
+		print(bar + baz)
+	end
+	
+end

@@ -31,11 +31,13 @@ public interface CabegConstants {
   /** RegularExpression Id. */
   int INIT = 15;
   /** RegularExpression Id. */
-  int NUMBER = 16;
+  int COMMA = 16;
   /** RegularExpression Id. */
-  int DIGIT = 17;
+  int NUMBER = 17;
   /** RegularExpression Id. */
-  int ID = 18;
+  int DIGIT = 18;
+  /** RegularExpression Id. */
+  int ID = 19;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -58,6 +60,7 @@ public interface CabegConstants {
     "\")\"",
     "\"(\"",
     "\":=\"",
+    "\",\"",
     "<NUMBER>",
     "<DIGIT>",
     "<ID>",

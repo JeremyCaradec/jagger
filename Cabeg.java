@@ -74,18 +74,19 @@ public class Cabeg implements CabegConstants {
   }
 
   final public void instructions() throws ParseException {
+    statement();
     label_3:
     while (true) {
-      statement();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case LET:
-      case PRINT:
+      case COMMA:
         ;
         break;
       default:
         jj_la1[3] = jj_gen;
         break label_3;
       }
+      jj_consume_token(COMMA);
+      statement();
     }
   }
 
@@ -106,8 +107,8 @@ public class Cabeg implements CabegConstants {
       case LBR:
       case NUMBER:
       case ID:
-      case 25:
       case 26:
+      case 27:
         a = comp();
         break;
       default:
@@ -120,8 +121,8 @@ public class Cabeg implements CabegConstants {
       case LBR:
       case NUMBER:
       case ID:
-      case 25:
       case 26:
+      case 27:
         ;
         break;
       default:
@@ -139,40 +140,40 @@ public class Cabeg implements CabegConstants {
   Exp a,b;
     a = expression();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 19:
     case 20:
     case 21:
     case 22:
     case 23:
     case 24:
+    case 25:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 19:
-        jj_consume_token(19);
-        b = expression();
-                                      a = new Lt(a,b);
-        break;
       case 20:
         jj_consume_token(20);
         b = expression();
-                                a = new Le(a,b);
+                                      a = new Lt(a,b);
         break;
       case 21:
         jj_consume_token(21);
         b = expression();
-                                a = new Gt(a,b);
+                                a = new Le(a,b);
         break;
       case 22:
         jj_consume_token(22);
         b = expression();
-                                a = new Ge(a,b);
+                                a = new Gt(a,b);
         break;
       case 23:
         jj_consume_token(23);
         b = expression();
-                                a = new Equal(a,b);
+                                a = new Ge(a,b);
         break;
       case 24:
         jj_consume_token(24);
+        b = expression();
+                                a = new Equal(a,b);
+        break;
+      case 25:
+        jj_consume_token(25);
         b = expression();
                                 a = new Nequal(a,b);
         break;
@@ -198,8 +199,8 @@ public class Cabeg implements CabegConstants {
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 25:
       case 26:
+      case 27:
         ;
         break;
       default:
@@ -207,13 +208,13 @@ public class Cabeg implements CabegConstants {
         break label_5;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 25:
-        jj_consume_token(25);
+      case 26:
+        jj_consume_token(26);
         b = term();
                      a = new Add(a, b);
         break;
-      case 26:
-        jj_consume_token(26);
+      case 27:
+        jj_consume_token(27);
         b = term();
                      a = new Sub(a, b);
         break;
@@ -233,16 +234,16 @@ public class Cabeg implements CabegConstants {
   Exp a,b;
     a = unary();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 27:
     case 28:
+    case 29:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 27:
-        jj_consume_token(27);
+      case 28:
+        jj_consume_token(28);
         b = term();
                      a = new Mul(a, b);
         break;
-      case 28:
-        jj_consume_token(28);
+      case 29:
+        jj_consume_token(29);
         b = term();
                      a = new Div(a, b);
         break;
@@ -265,13 +266,13 @@ public class Cabeg implements CabegConstants {
   final public Exp unary() throws ParseException {
     Exp a;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 26:
-      jj_consume_token(26);
+    case 27:
+      jj_consume_token(27);
       a = factor();
                                        {if (true) return new Neg(a);}
       break;
-    case 25:
-      jj_consume_token(25);
+    case 26:
+      jj_consume_token(26);
       a = factor();
                                            {if (true) return a;}
       break;
@@ -331,7 +332,7 @@ public class Cabeg implements CabegConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1100,0x1100,0x800,0x1100,0x6054020,0x6054020,0x1f80000,0x1f80000,0x6000000,0x6000000,0x18000000,0x18000000,0x6054000,0x54000,};
+      jj_la1_0 = new int[] {0x1100,0x1100,0x800,0x10000,0xc0a4020,0xc0a4020,0x3f00000,0x3f00000,0xc000000,0xc000000,0x30000000,0x30000000,0xc0a4000,0xa4000,};
    }
 
   /** Constructor with InputStream. */
@@ -448,7 +449,7 @@ public class Cabeg implements CabegConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[29];
+    boolean[] la1tokens = new boolean[30];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -462,7 +463,7 @@ public class Cabeg implements CabegConstants {
         }
       }
     }
-    for (int i = 0; i < 29; i++) {
+    for (int i = 0; i < 30; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
