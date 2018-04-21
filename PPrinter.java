@@ -43,7 +43,7 @@ public class PPrinter implements Visitor
 	}
 	public void visit(Neg val)
 	{
-		System.out.print("-(");
+		System.out.print("(-");
 		val.getExp().accept(this);
 		System.out.print(')');
 	}
@@ -86,5 +86,28 @@ public class PPrinter implements Visitor
 		System.out.print(" == ");
 		val.getRhs().accept(this);
 		System.out.print(')');
+	}
+	public void visit(Nequal val)
+	{
+		System.out.print('(');
+		val.getLhs().accept(this);
+		System.out.print(" <> ");
+		val.getRhs().accept(this);
+		System.out.print(')');
+	}
+	public void visit(CondBranch val)
+	{
+		System.out.print("if ");
+		val.getE1().accept(this);
+		System.out.print(" then ");
+		val.getE2().accept(this);
+		System.out.print(" else ");
+		val.getE3().accept(this);
+	}
+
+	public void visit(Var val)
+	{
+		System.out.print(val.getId()+" := ");
+		Scope.getIdValue(val.getId()).accept(this);
 	}
 }

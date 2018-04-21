@@ -4,7 +4,7 @@ Règles d'évaluation
 La notation se fait selon la grille suivante, lue de façon flexible.  Par
 "flexible" comprendre que dans le cas d'un investissement manifeste mais avec
 des défauts, nous serons cléments ; en revanche, s'attendre à une notation
-sévère sur un rendu mal fini.
+sévère sur un rendu mal fini.	
 
 Une parfaite réalisation jusqu'au point "if-then-else" assure un 8/20.  La
 notation finale du cours est ainsi faite :

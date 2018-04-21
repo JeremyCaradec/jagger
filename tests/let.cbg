@@ -1,0 +1,5 @@
+let 
+	var foo:=2 
+	var bar:=foo*foo 
+in 
+	print(bar+5) end

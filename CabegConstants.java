@@ -9,13 +9,33 @@ public interface CabegConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int NUMBER = 4;
+  int IF = 5;
   /** RegularExpression Id. */
-  int DIGIT = 5;
+  int THEN = 6;
   /** RegularExpression Id. */
-  int EOL = 6;
+  int ELSE = 7;
   /** RegularExpression Id. */
-  int KEYWORDS = 7;
+  int LET = 8;
+  /** RegularExpression Id. */
+  int IN = 9;
+  /** RegularExpression Id. */
+  int END = 10;
+  /** RegularExpression Id. */
+  int VAR = 11;
+  /** RegularExpression Id. */
+  int PRINT = 12;
+  /** RegularExpression Id. */
+  int RBR = 13;
+  /** RegularExpression Id. */
+  int LBR = 14;
+  /** RegularExpression Id. */
+  int INIT = 15;
+  /** RegularExpression Id. */
+  int NUMBER = 16;
+  /** RegularExpression Id. */
+  int DIGIT = 17;
+  /** RegularExpression Id. */
+  int ID = 18;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -26,21 +46,31 @@ public interface CabegConstants {
     "\" \"",
     "\"\\r\"",
     "\"\\t\"",
+    "\"\\n\"",
+    "\"if\"",
+    "\"then\"",
+    "\"else\"",
+    "\"let\"",
+    "\"in\"",
+    "\"end\"",
+    "\"var\"",
+    "\"print\"",
+    "\")\"",
+    "\"(\"",
+    "\":=\"",
     "<NUMBER>",
     "<DIGIT>",
-    "\"\\n\"",
-    "\"print\"",
-    "\"+\"",
-    "\"-\"",
-    "\"*\"",
-    "\"/\"",
+    "<ID>",
     "\"<\"",
     "\"<=\"",
     "\">\"",
     "\">=\"",
     "\"==\"",
-    "\"(\"",
-    "\")\"",
+    "\"<>\"",
+    "\"+\"",
+    "\"-\"",
+    "\"*\"",
+    "\"/\"",
   };
 
 }

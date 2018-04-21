@@ -97,11 +97,38 @@ public class Eval implements Visitor
 		val.getLhs().accept(this);
 		tmp = result;
 		val.getRhs().accept(this);
-		result = (tmp ==result)?1:0;
+		result = (tmp == result)?1:0;
+	}
+
+	public void visit(Nequal val)
+	{
+		double tmp;
+		val.getLhs().accept(this);
+		tmp = result;
+		val.getRhs().accept(this);
+		result = (tmp != result)?1:0;
 	}
 
 	public void visit(Num val)
 	{
 		result = val.getDouble();
+	}
+
+	public void visit(CondBranch val)
+	{
+		val.getE1().accept(this);
+		if(result != 0)
+		{
+			val.getE2().accept(this);
+		}
+		else
+		{
+			val.getE3().accept(this);
+		}
+	}
+
+	public void visit(Var val)
+	{
+		Scope.getIdValue(val.getId()).accept(this);
 	}
 }

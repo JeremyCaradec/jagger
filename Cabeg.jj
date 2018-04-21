@@ -9,42 +9,110 @@ public class Cabeg
 PARSER_END(Cabeg)
 
 // Characters to ignore.
-SKIP: { " " | "\r" | "\t" }
+SKIP: { " " | "\r" | "\t" | "\n"}
+
+//Language's Keywords
+TOKEN:
+{
+		< IF: "if" >
+|		< THEN: "then" >
+|		<	ELSE: "else" >
+|		< LET: "let" >
+|		< IN: "in" >
+| 	< END: "end" >
+|		< VAR: "var" >
+|		< PRINT: "print" >
+|		< RBR: ")" >
+|		< LBR: "(" >
+|		< INIT: ":=" >
+}
 
 // Token specifications.
 TOKEN:
 {
 		< NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  // A decimal number.
 |   < DIGIT: ["0"-"9"] >                      // A decimal digit.
-|   < EOL: "\n" >                             // End of line.
-|		< KEYWORD: "print" >										  // Keywords.
+|		< ID: ["a"-"z", "A"-"Z"](["a"-"z", "A"-"Z", "0"-"9"])* > //Identifier.
 }
 
-// Main lopp: read expressions on a line until end of file.
-//     mainloop → (expression <EOL>)* <EOF>
+// Main loop: read expressions on a line until end of file.
+// mainloop → (expression <EOL>)* <EOF>
 void mainloop():
-{ Exp a; }
+{ Exp a; Scope s;}
 {
     (
-      a=expression() <EOL> { new PPrinter(a); System.out.print("=" + new Eval(a).result()+ '\n');}
+      	statement()
     )*
     <EOF>
 }
 
+void statement():
+{ Exp e; }
+{
+		scope()
+	|	<PRINT> <LBR> e=ternary() <RBR> {new PrintFunc(e);}
+}
+
+void scope():
+{Scope s;}
+{
+		<LET> s = declaration() <IN> instructions() <END> {s.exit();}
+}
+
+Scope declaration():
+{Token t; Exp e; Scope s = new Scope();}
+{
+	(
+	<VAR> t=<ID> <INIT> e=expression() {s.addDeclaration(t.toString(), e);}
+	)* {return s;}
+}
+
+void instructions():
+{}
+{
+	(
+		statement()
+	)+
+}
+
+Exp ternary():
+{ Exp a,b,c; }
+{
+  (	<IF> a=ternary() <THEN> b=ternary() <ELSE> c=ternary() {a= new CondBranch(a,b,c);}
+	| a = comp()
+	)+	{return a;}
+}
+
+// Comparisons
+// C => E ('<' E | '==' E | etc...)
+Exp comp():
+{ Exp a,b; }
+{
+	a = expression()
+	(
+	 	"<"  b=expression() { a = new Lt(a,b); }
+	| "<=" b=expression() { a = new Le(a,b); }
+	| ">"  b=expression() { a = new Gt(a,b); }
+	| ">=" b=expression() { a = new Ge(a,b); }
+	| "==" b=expression() { a = new Equal(a,b); }
+	| "<>" b=expression() { a = new Nequal(a,b);}
+	)?	{return a;}
+}
+
 // Expression (the axiom).
-// E -> T ('+'T | '-'T)*
+// E -> T ('+'E | '-'E | etc...)?
 Exp expression():
 { Exp a,b; }
 {
     a=term()
     (
-      "+" b=expression() { a = new Add(a, b);}
-    | "-" b=expression() { a = new Sub(a, b);}
-    )? { return a; }
+      "+" b=term() { a = new Add(a, b);}
+    | "-" b=term() { a = new Sub(a, b);}
+    )* { return a; }
 }
 
 // Term.
-// T -> U ('*'F | '/'F)*
+// T -> U ('*'T | '/'T )*
 Exp term():
 { Exp a,b; }
 {
@@ -52,22 +120,19 @@ Exp term():
     (
       "*" b=term() { a = new Mul(a, b); }
     | "/" b=term() { a = new Div(a, b); }
-    |	"<" b=term() { a = new Lt(a,b); }
-    | "<=" b=term() { a = new Le(a,b); }
-    | ">" b=term() { a = new Gt(a,b); }
-    | ">=" b=term() { a = new Ge(a,b); }
-    | "==" b=term() { a = new Equal(a,b); }
-    )* { return a; }
+    )? { return a; }
 }
 
+// Unary
+// U -> '-'F | '+'F | F
 Exp unary():
 {
     Exp a;
 }
 {
-    "-" a=factor()     { return new Neg(a); }
-|   "+" a=factor()		 { return a; }
-|   a=factor()         { return a; }
+		  "-" a=factor()     { return new Neg(a); }
+	|   "+" a=factor()		 { return a; }
+	|   a=factor()         { return a; }
 }
 
 // Factor of an expression.
@@ -77,4 +142,5 @@ Exp factor():
 {
       t=<NUMBER> { return new Num(Double.parseDouble(t.toString())); }
     | "(" e=expression() ")" { return e; }
+    | t = <ID> {return new Var(t.toString()); }
 }

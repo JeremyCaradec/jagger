@@ -11,4 +11,7 @@ interface Visitor
 	public void visit(Le v);
 	public void visit(Lt v);
 	public void visit(Equal v);
+	public void visit(Nequal v);
+	public void visit(CondBranch v);
+	public void visit(Var v);
 }
