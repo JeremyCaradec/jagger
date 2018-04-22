@@ -2,7 +2,8 @@ public class PrintFunc implements Ast
 {
 	public PrintFunc(Exp e)
 	{
+		new TypeChecker(e);
 		new PPrinter(e); 
-		System.out.print(" = " + new Eval(e).result()+ '\n');
+		System.out.println(" = " + new Eval(e).res_str());
 	}
 }

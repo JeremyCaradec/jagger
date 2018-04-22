@@ -1,12 +1,11 @@
 let 
-	var foo:=2 
-	var bar:=foo*foo 
-in 
-	print(bar+5),	
-	let
-		var baz:=2
-	in
-		print(bar + baz)
-	end
-	
-end
+	var i := 10
+ 	in
+    print(i),
+    let 
+    	var i := i * i
+    in
+      print(i)
+    end,
+    print(i)
+ end

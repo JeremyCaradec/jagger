@@ -9,7 +9,7 @@ import java.io.IOException;
     {
     	if(args.length != 1)
     	{
-    		System.out.println("how to use: java Main filename");
+    		System.out.println("how to use: java Main path");
     		return;
     	}
 

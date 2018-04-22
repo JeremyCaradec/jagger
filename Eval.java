@@ -1,10 +1,12 @@
 public class Eval implements Visitor
 {
 	private double result;
+	private String res_str;
 
 	public Eval(Exp e)
 	{
 		result = 0.0;
+		res_str = "";
 		e.accept(this);
 	}
 
@@ -13,13 +15,32 @@ public class Eval implements Visitor
 		return result;
 	}
 
+	public String res_str()
+	{
+		return res_str;
+	}
+
 	public void visit(Add val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = tmp + result;
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(val.getType() == TypeChecker.ExpType.String)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			res_str = "\"" + tmp.replace("\"", "") + res_str.replace("\"", "") + "\"";
+		}
+		else if(val.getType() == TypeChecker.ExpType.Double)
+		{
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = tmp + result;
+			res_str = Double.toString(result);
+		}
 	}
 	
 	public void visit(Mul val)
@@ -29,6 +50,7 @@ public class Eval implements Visitor
 		tmp = result;
 		val.getRhs().accept(this);
 		result = tmp * result;
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Sub val)
@@ -38,6 +60,7 @@ public class Eval implements Visitor
 		tmp = result;
 		val.getRhs().accept(this);
 		result = tmp - result;
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Div val)
@@ -47,71 +70,161 @@ public class Eval implements Visitor
 		tmp = result;
 		val.getRhs().accept(this);
 		result = tmp / result;
+		res_str = Double.toString(result);
+
 	}
 
 	public void visit(Neg val)
 	{
 		val.getExp().accept(this);
 		result = -result;
+		res_str = Double.toString(result);
+
 	}
 
 	public void visit(Lt val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = (tmp < result)?1:0;
+		
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(lhs instanceof ExpString && rhs instanceof ExpString)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			result = (tmp.compareTo(res_str) < 0)?1:0;
+		}
+		else
+		{	
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = (tmp < result)?1:0;
+		}
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Le val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = (tmp <= result)?1:0;
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(lhs instanceof ExpString && rhs instanceof ExpString)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			result = (tmp.compareTo(res_str) <= 0)?1:0;
+		}
+		else
+		{
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = (tmp <= result)?1:0;
+		}
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Gt val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = (tmp > result)?1:0;
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(lhs instanceof ExpString && rhs instanceof ExpString)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			result = (tmp.compareTo(res_str) > 0)?1:0;
+		}
+		else
+		{
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = (tmp > result)?1:0;
+		}
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Ge val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = (tmp >= result)?1:0;
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(lhs instanceof ExpString && rhs instanceof ExpString)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			result = (tmp.compareTo(res_str) >= 0)?1:0;
+		}
+		else
+		{
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = (tmp >= result)?1:0;
+		}
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Equal val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = (tmp == result)?1:0;
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(lhs instanceof ExpString && rhs instanceof ExpString)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			result = (tmp.compareTo(res_str) == 0)?1:0;
+		}
+		else
+		{
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = (tmp == result)?1:0;
+		}
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Nequal val)
 	{
-		double tmp;
-		val.getLhs().accept(this);
-		tmp = result;
-		val.getRhs().accept(this);
-		result = (tmp != result)?1:0;
+		Exp lhs = val.getLhs();
+		Exp rhs = val.getRhs();
+		if(lhs instanceof ExpString && rhs instanceof ExpString)
+		{
+			String tmp;
+			lhs.accept(this);
+			tmp = res_str;
+			rhs.accept(this);
+			result = (tmp.compareTo(res_str) != 0)?1:0;
+		}
+		else
+		{
+			double tmp;
+			lhs.accept(this);
+			tmp = result;
+			rhs.accept(this);
+			result = (tmp != result)?1:0;
+		}
+		res_str = Double.toString(result);
 	}
 
 	public void visit(Num val)
 	{
 		result = val.getDouble();
+		res_str = Double.toString(result);
 	}
 
 	public void visit(CondBranch val)
@@ -125,10 +238,19 @@ public class Eval implements Visitor
 		{
 			val.getE3().accept(this);
 		}
+		
+		if(val.getType() == TypeChecker.ExpType.Double)
+			res_str = Double.toString(result);
 	}
 
 	public void visit(Var val)
 	{
 		Scope.getIdValue(val.getId()).accept(this);
+		res_str = Double.toString(result);
+	}
+
+	public void visit(ExpString val)
+	{
+		res_str = val.getString();
 	}
 }

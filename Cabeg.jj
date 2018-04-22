@@ -31,9 +31,11 @@ TOKEN:
 // Token specifications.
 TOKEN:
 {
-		< NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  // A decimal number.
-|   < DIGIT: ["0"-"9"] >                      // A decimal digit.
-|		< ID: ["a"-"z", "A"-"Z"](["a"-"z", "A"-"Z", "0"-"9"])* > //Identifier.
+		< NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  			// A decimal number.
+|   < DIGIT: ["0"-"9"] >                      			// A decimal digit.
+|		<	#STRING_LITERAL: ["a"-"z", "A"-"Z"]	>										// The alphabet
+|		< ID: <STRING_LITERAL> (<STRING_LITERAL> | <DIGIT>)* > 				// An identifier.
+|		< STRING: "\"" (<STRING_LITERAL> | <DIGIT> | " ")* "\""> 		// A string.
 }
 
 // Main loop: read expressions on a line until end of file.
@@ -64,7 +66,7 @@ Scope declaration():
 {Token t; Exp e; Scope s = new Scope();}
 {
 	(
-	<VAR> t=<ID> <INIT> e=expression() {s.addDeclaration(t.toString(), e);}
+		<VAR> t=<ID> <INIT> e=expression() {s.addDeclaration(t.toString(), e);}
 	)* {return s;}
 }
 
@@ -80,7 +82,8 @@ void instructions():
 Exp ternary():
 { Exp a,b,c; }
 {
-  (	<IF> a=ternary() <THEN> b=ternary() <ELSE> c=ternary() {a= new CondBranch(a,b,c);}
+  (	
+  <IF> a=ternary() <THEN> b=ternary() <ELSE> c=ternary() {a= new CondBranch(a,b,c);}
 	| a = comp()
 	)+	{return a;}
 }
@@ -92,10 +95,10 @@ Exp comp():
 {
 	a = expression()
 	(
-	 	"<"  b=expression() { a = new Lt(a,b); }
-	| "<=" b=expression() { a = new Le(a,b); }
-	| ">"  b=expression() { a = new Gt(a,b); }
-	| ">=" b=expression() { a = new Ge(a,b); }
+	 	"<"  b=expression() { a = new Lt(a,b); 		}		
+	| "<=" b=expression() { a = new Le(a,b); 		}
+	| ">"  b=expression() { a = new Gt(a,b); 		}
+	| ">=" b=expression() { a = new Ge(a,b);		}
 	| "==" b=expression() { a = new Equal(a,b); }
 	| "<>" b=expression() { a = new Nequal(a,b);}
 	)?	{return a;}
@@ -112,6 +115,7 @@ Exp expression():
     | "-" b=term() { a = new Sub(a, b);}
     )* { return a; }
 }
+
 
 // Term.
 // T -> U ('*'T | '/'T )*
@@ -145,4 +149,5 @@ Exp factor():
       t=<NUMBER> { return new Num(Double.parseDouble(t.toString())); }
     | "(" e=expression() ")" { return e; }
     | t = <ID> {return new Var(t.toString()); }
+    | t = <STRING> {return new ExpString(t.toString());}
 }

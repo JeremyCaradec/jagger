@@ -107,7 +107,11 @@ public class PPrinter implements Visitor
 
 	public void visit(Var val)
 	{
-		System.out.print(val.getId()+" := ");
-		Scope.getIdValue(val.getId()).accept(this);
+		System.out.print(val.getId());
+	}
+
+	public void visit(ExpString val)
+	{
+		System.out.print(val.getString());
 	}
 }

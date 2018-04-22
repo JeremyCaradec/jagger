@@ -14,4 +14,5 @@ interface Visitor
 	public void visit(Nequal v);
 	public void visit(CondBranch v);
 	public void visit(Var v);
+	public void visit(ExpString v);
 }
