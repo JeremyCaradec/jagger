@@ -97,12 +97,14 @@ public class PPrinter implements Visitor
 	}
 	public void visit(CondBranch val)
 	{
-		System.out.print("if ");
+		System.out.print("(if ");
 		val.getE1().accept(this);
 		System.out.print(" then ");
 		val.getE2().accept(this);
 		System.out.print(" else ");
 		val.getE3().accept(this);
+		System.out.print(")");
+
 	}
 
 	public void visit(Var val)

@@ -1,11 +1,2 @@
-let 
-	var i := 10
- 	in
-    print(i),
-    let 
-    	var i := i * i
-    in
-      print(i)
-    end,
-    print(i)
- end
+let in print(2<if 1 then 2 else 3) end
+

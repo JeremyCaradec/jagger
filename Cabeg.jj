@@ -53,39 +53,30 @@ void statement():
 { Exp e; }
 {
 		scope()
-	|	<PRINT> <LBR> e=ternary() <RBR> {new PrintFunc(e);}
+	|	<PRINT> <LBR> e=comp() <RBR> {new PrintFunc(e);}
 }
 
 void scope():
-{Scope s;}
+{ Scope s; }
 {
-		<LET> s = declaration() <IN> instructions() <END> {s.exit();}
+		<LET> s = declaration() <IN> instruction() <END> {s.exit();}
 }
 
 Scope declaration():
 {Token t; Exp e; Scope s = new Scope();}
 {
 	(
-		<VAR> t=<ID> <INIT> e=expression() {s.addDeclaration(t.toString(), e);}
+		<VAR> t=<ID> <INIT> e=comp() {s.addDeclaration(t.toString(), e);}
 	)* {return s;}
 }
 
-void instructions():
+void instruction():
 {}
 {
 	statement()
 	(
 		<COMMA> statement()
 	)*
-}
-
-Exp ternary():
-{ Exp a,b,c; }
-{
-  (	
-  <IF> a=ternary() <THEN> b=ternary() <ELSE> c=ternary() {a= new CondBranch(a,b,c);}
-	| a = comp()
-	)+	{return a;}
 }
 
 // Comparisons
@@ -109,11 +100,11 @@ Exp comp():
 Exp expression():
 { Exp a,b; }
 {
-    a=term()
-    (
-      "+" b=term() { a = new Add(a, b);}
-    | "-" b=term() { a = new Sub(a, b);}
-    )* { return a; }
+  a=term()
+  (
+    "+" b=term() { a = new Add(a, b); }
+  | "-" b=term() { a = new Sub(a, b); }
+  )* { return a; }
 }
 
 
@@ -136,9 +127,18 @@ Exp unary():
     Exp a;
 }
 {
-		  "-" a=factor()     { return new Neg(a); }
-	|   "+" a=factor()		 { return a; }
-	|   a=factor()         { return a; }
+		  "-" a = ternary()    { return new Neg(a); }
+	|   "+" a = ternary()		 { return a; }
+	|   a = ternary()        { return a; }
+}
+
+Exp ternary():
+{ Exp a,b,c; }
+{
+  (	
+  	<IF> a=comp() <THEN> b=comp() <ELSE> c=comp() {a = new CondBranch(a,b,c);}
+	| a = factor()
+	)+	{ return a; }
 }
 
 // Factor of an expression.
@@ -147,7 +147,7 @@ Exp factor():
 { Token t; Exp e; }
 {
       t=<NUMBER> { return new Num(Double.parseDouble(t.toString())); }
-    | "(" e=expression() ")" { return e; }
-    | t = <ID> {return new Var(t.toString()); }
-    | t = <STRING> {return new ExpString(t.toString());}
+    | "(" e=comp() ")" { return e; }
+    | t = <ID> { return new Var(t.toString()); }
+    | t = <STRING> { return new ExpString(t.toString()); }
 }

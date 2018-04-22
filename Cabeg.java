@@ -30,9 +30,9 @@ public class Cabeg implements CabegConstants {
     case PRINT:
       jj_consume_token(PRINT);
       jj_consume_token(LBR);
-      e = ternary();
+      e = comp();
       jj_consume_token(RBR);
-                                                 new PrintFunc(e);
+                                              new PrintFunc(e);
       break;
     default:
       jj_la1[1] = jj_gen;
@@ -42,13 +42,13 @@ public class Cabeg implements CabegConstants {
   }
 
   final public void scope() throws ParseException {
- Scope s;
+  Scope s;
     jj_consume_token(LET);
     s = declaration();
     jj_consume_token(IN);
-    instructions();
+    instruction();
     jj_consume_token(END);
-                                                                   s.exit();
+                                                                  s.exit();
   }
 
   final public Scope declaration() throws ParseException {
@@ -66,14 +66,14 @@ public class Cabeg implements CabegConstants {
       jj_consume_token(VAR);
       t = jj_consume_token(ID);
       jj_consume_token(INIT);
-      e = expression();
-                                                    s.addDeclaration(t.toString(), e);
+      e = comp();
+                                              s.addDeclaration(t.toString(), e);
     }
             {if (true) return s;}
     throw new Error("Missing return statement in function");
   }
 
-  final public void instructions() throws ParseException {
+  final public void instruction() throws ParseException {
     statement();
     label_3:
     while (true) {
@@ -88,52 +88,6 @@ public class Cabeg implements CabegConstants {
       jj_consume_token(COMMA);
       statement();
     }
-  }
-
-  final public Exp ternary() throws ParseException {
-  Exp a,b,c;
-    label_4:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IF:
-        jj_consume_token(IF);
-        a = ternary();
-        jj_consume_token(THEN);
-        b = ternary();
-        jj_consume_token(ELSE);
-        c = ternary();
-                                                          a= new CondBranch(a,b,c);
-        break;
-      case LBR:
-      case NUMBER:
-      case ID:
-      case STRING:
-      case 28:
-      case 29:
-        a = comp();
-        break;
-      default:
-        jj_la1[4] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IF:
-      case LBR:
-      case NUMBER:
-      case ID:
-      case STRING:
-      case 28:
-      case 29:
-        ;
-        break;
-      default:
-        jj_la1[5] = jj_gen;
-        break label_4;
-      }
-    }
-                 {if (true) return a;}
-    throw new Error("Missing return statement in function");
   }
 
 // Comparisons
@@ -180,13 +134,13 @@ public class Cabeg implements CabegConstants {
                                 a = new Nequal(a,b);
         break;
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[4] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[5] = jj_gen;
       ;
     }
                  {if (true) return a;}
@@ -198,7 +152,7 @@ public class Cabeg implements CabegConstants {
   final public Exp expression() throws ParseException {
   Exp a,b;
     a = term();
-    label_5:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 28:
@@ -206,27 +160,27 @@ public class Cabeg implements CabegConstants {
         ;
         break;
       default:
-        jj_la1[8] = jj_gen;
-        break label_5;
+        jj_la1[6] = jj_gen;
+        break label_4;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 28:
         jj_consume_token(28);
         b = term();
-                     a = new Add(a, b);
+                   a = new Add(a, b);
         break;
       case 29:
         jj_consume_token(29);
         b = term();
-                     a = new Sub(a, b);
+                   a = new Sub(a, b);
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[7] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
     }
-         {if (true) return a;}
+       {if (true) return a;}
     throw new Error("Missing return statement in function");
   }
 
@@ -250,13 +204,13 @@ public class Cabeg implements CabegConstants {
                      a = new Div(a, b);
         break;
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[8] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[9] = jj_gen;
       ;
     }
          {if (true) return a;}
@@ -270,26 +224,69 @@ public class Cabeg implements CabegConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 29:
       jj_consume_token(29);
-      a = factor();
-                                       {if (true) return new Neg(a);}
+      a = ternary();
+                                         {if (true) return new Neg(a);}
       break;
     case 28:
       jj_consume_token(28);
-      a = factor();
+      a = ternary();
                                            {if (true) return a;}
       break;
+    case IF:
     case LBR:
     case NUMBER:
     case ID:
     case STRING:
-      a = factor();
-                                 {if (true) return a;}
+      a = ternary();
+                                   {if (true) return a;}
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[10] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Exp ternary() throws ParseException {
+  Exp a,b,c;
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IF:
+        jj_consume_token(IF);
+        a = comp();
+        jj_consume_token(THEN);
+        b = comp();
+        jj_consume_token(ELSE);
+        c = comp();
+                                                       a = new CondBranch(a,b,c);
+        break;
+      case LBR:
+      case NUMBER:
+      case ID:
+      case STRING:
+        a = factor();
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IF:
+      case LBR:
+      case NUMBER:
+      case ID:
+      case STRING:
+        ;
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        break label_5;
+      }
+    }
+                  {if (true) return a;}
     throw new Error("Missing return statement in function");
   }
 
@@ -304,17 +301,17 @@ public class Cabeg implements CabegConstants {
       break;
     case LBR:
       jj_consume_token(LBR);
-      e = expression();
+      e = comp();
       jj_consume_token(RBR);
-                               {if (true) return e;}
+                         {if (true) return e;}
       break;
     case ID:
       t = jj_consume_token(ID);
-                {if (true) return new Var(t.toString());}
+                 {if (true) return new Var(t.toString());}
       break;
     case STRING:
       t = jj_consume_token(STRING);
-                    {if (true) return new ExpString(t.toString());}
+                     {if (true) return new ExpString(t.toString());}
       break;
     default:
       jj_la1[13] = jj_gen;
@@ -339,7 +336,7 @@ public class Cabeg implements CabegConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1100,0x1100,0x800,0x10000,0x30324020,0x30324020,0xfc00000,0xfc00000,0x30000000,0x30000000,0xc0000000,0xc0000000,0x30324000,0x324000,};
+      jj_la1_0 = new int[] {0x1100,0x1100,0x800,0x10000,0xfc00000,0xfc00000,0x30000000,0x30000000,0xc0000000,0xc0000000,0x30324020,0x324020,0x324020,0x324000,};
    }
 
   /** Constructor with InputStream. */
