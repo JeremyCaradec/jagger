@@ -1,20 +1,22 @@
-import java.util.ArrayList;
+/*import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Scope extends Exp
+public class Scopeold extends Exp
 {
 
-	public Scope parent;
+	private static List<Scope> scopes = new ArrayList<Scope>();
+
+	public static int curScope = -1;
 	private HashMap<String, Exp> map;
 	private ArrayList<Exp> instr;
 
-	Scope(Scope parent)
+	Scopeold()
 	{
 		setType(TypeChecker.ExpType.Void);
 		map = new HashMap<String, Exp>();
-		instr = new ArrayList<Exp>();		
-		this.parent = parent;
+		instr = new ArrayList<Exp>();
+		enter();
 	}
 
 	public void accept(Visitor v)
@@ -22,18 +24,12 @@ public class Scope extends Exp
 		v.visit(this);
 	}
 
-	public Scope getParent()
-	{
-		return parent;
-	}
-
-
 	public void addDeclaration(String s, Exp e)
 	{
 		Exp newExp = null;
 		Eval eval;
-		new TypeChecker(e, this);
-		eval = new Eval(e, this);
+		new TypeChecker(e);
+		eval = new Eval(e);
 		if(e.getType() == TypeChecker.ExpType.Double)
 			newExp = new Num(eval.result());
 		else if(e.getType() == TypeChecker.ExpType.String)
@@ -56,25 +52,33 @@ public class Scope extends Exp
 		return map;
 	}
 
-	public void affect(String s, Exp e)
-	{		
-		if(hasId(s))
+	public static void affect(String s, Exp e)
+	{
+		Scope scope = null;
+		for(int i=curScope; i >= 0; i--)
 		{
-			put(s,e);
-			return;
+			scope = scopes.get(i);
+			if(scope.hasId(s))
+			{
+				break;
+			}
 		}
-		parent.affect(s, e);
+		scope.put(s, e);
 	} 
 
 
-	public Exp getIdValue(String s)
-	{
-		Exp e = null;		
-		if(hasId(s))
+	public static Exp getIdValue(String s)
+	{		
+		Exp e = null;
+		for(int i=curScope; i >= 0; i--)
 		{
-			return map.get(s);
+			Scope scope = scopes.get(i);
+			if(scope.hasId(s))
+			{
+				e = scope.get(s);
+				break;
+			}
 		}
-		e = parent.getIdValue(s);
 		return e;
 	}
 
@@ -93,5 +97,17 @@ public class Scope extends Exp
 		map.put(s, e);
 	}
 
+	public void enter()
+	{
+		scopes.add(this);
+		curScope++;
+	}
 
-}
+	public static void exit()
+	{
+		scopes.remove(curScope);
+		curScope--;
+	}
+
+
+}*/

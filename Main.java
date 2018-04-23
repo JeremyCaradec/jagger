@@ -18,7 +18,7 @@ import java.io.IOException;
 		try 
 		{
 		    is = new FileInputStream(args[0]);
-		    Cabeg parser = new Cabeg(is);
+		    Jagger parser = new Jagger(is);
 		    parser.mainloop();
 		    is.close();
 
@@ -28,6 +28,6 @@ import java.io.IOException;
 		} catch (IOException e) {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
-		}
+		}		
     }
 }

@@ -5,62 +5,154 @@ options { LOOKAHEAD=1; FORCE_LA_CHECK=true; STATIC = false;}
 PARSER_BEGIN(Jagger)
 public class Jagger
 {
+	Scope parent = null;
 }
 PARSER_END(Jagger)
 
 // Characters to ignore.
-SKIP: { " " | "\r" | "\t" }
+SKIP: { " " | "\r" | "\t" | "\n"}
+
+//Language's Keywords
+TOKEN:
+{
+		< IF: "if" >
+|		< THEN: "then" >
+|		<	ELSE: "else" >
+|		< LET: "let" >
+|		< IN: "in" >
+| 	< END: "end" >
+|		< VAR: "var" >
+|		< PRINT: "print" >
+|		< RBR: ")" >
+|		< LBR: "(" >
+|		< AFFECTATION: ":=" >
+|		< COMMA: "," >
+}
 
 // Token specifications.
 TOKEN:
 {
-    < NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  // A decimal number.
-|   < DIGIT: ["0"-"9"] >                      // A decimal digit.
-|   < EOL: "\n" >                             // End of line.
+		< NUMBER: (<DIGIT>)+ ("." (<DIGIT>)*)? >  			// A decimal number.
+|   < DIGIT: ["0"-"9"] >                      			// A decimal digit.
+|		<	#STRING_LITERAL: ["a"-"z", "A"-"Z"]	>										// The alphabet
+|		< ID: <STRING_LITERAL> (<STRING_LITERAL> | <DIGIT>)* > 				// An identifier.
+|		< STRING: "\"" (<STRING_LITERAL> | <DIGIT> | " ")* "\""> 		// A string.
 }
 
-// Main lopp: read expressions on a line until end of file.
-//     mainloop → (expression <EOL>)* <EOF>
+// Main loop: read expressions on a line until end of file.
+// mainloop → (expression <EOL>)* <EOF>
 void mainloop():
-{ Exp a; }
+{ Exp a;}
 {
     (
-      a=expression() <EOL> { new PPrinter(a); System.out.print("=" + new Eval(a).result()+ '\n');}
+      	a = statement() { new PPrinter(a); new TypeChecker(a); new Eval(a);  parent = null;}
     )*
     <EOF>
 }
 
+Exp statement():
+{ Exp e; }
+{
+	(	e=scope()
+	|	<PRINT> <LBR> e=comp() <RBR> {e = new PrintFunc(e);}
+	){return e;}
+}
+
+Exp scope():
+{ Scope s; }
+{
+		<LET> s = declaration() <IN> instruction(s) <END> { return s;}
+}
+
+Scope declaration():
+{Token t; Exp e; Scope s = new Scope(parent); parent = s;}
+{
+	(
+		<VAR> t=<ID> <AFFECTATION> e=comp() {s.addDeclaration(t.toString(), e);}
+	)* {return s;}
+}
+
+void instruction(Scope s):
+{Token t; Exp e;}
+{
+	(
+		e = statement()
+	| t=<ID> <AFFECTATION> e=comp() { e = new Affectation(t.toString(), e);}
+	) { s.addInstruction(e);}
+	(
+		<COMMA> instruction(s)
+	)*	
+}
+
+// Comparisons
+// C => E ('<' E | '==' E | etc...)
+Exp comp():
+{ Exp a,b; }
+{
+	a = expression()
+	(
+	 	"<"  b=expression() { a = new Lt(a,b); 		}		
+	| "<=" b=expression() { a = new Le(a,b); 		}
+	| ">"  b=expression() { a = new Gt(a,b); 		}
+	| ">=" b=expression() { a = new Ge(a,b);		}
+	| "==" b=expression() { a = new Equal(a,b); }
+	| "<>" b=expression() { a = new Nequal(a,b);}
+	)?	{return a;}
+}
+
 // Expression (the axiom).
-// E -> T ('+'T | '-'T)*
+// E -> T ('+'E | '-'E | etc...)?
 Exp expression():
 { Exp a,b; }
 {
-    a=term()
-    (
-      "+" b=expression() { a = new Add(a, b);}
-    | "-" b=expression() { a = new Sub(a, b);}
-    )? { return a; }
+  a=term()
+  (
+    "+" b=term() { a = new Add(a, b); }
+  | "-" b=term() { a = new Sub(a, b); }
+  )* { return a; }
 }
 
+
 // Term.
-// T -> F ('*'F | '/'F)*
+// T -> U ('*'T | '/'T )*
 Exp term():
 { Exp a,b; }
 {
-    a=factor()
+    a=unary()
     (
-      "*" b=factor() { a = new Mul(a, b); }
-    | "/" b=factor() { a = new Div(a, b);}
-    )* { return a; }
+      "*" b=term() { a = new Mul(a, b); }
+    | "/" b=term() { a = new Div(a, b); }
+    )? { return a; }
+}
+
+// Unary
+// U -> '-'F | '+'F | F
+Exp unary():
+{
+    Exp a;
+}
+{
+		  "-" a = ternary()    { return new Neg(a); }
+	|   "+" a = ternary()		 { return a; }
+	|   a = ternary()        { return a; }
+}
+
+Exp ternary():
+{ Exp a,b,c; }
+{
+  (	
+  	<IF> a=comp() <THEN> b=comp() <ELSE> c=comp() {a = new CondBranch(a,b,c);}
+	| a = factor()
+	)+	{ return a; }
 }
 
 // Factor of an expression.
 // F -> <NUMBER> | "(" E ")"
-
 Exp factor():
 { Token t; Exp e; }
 {
       t=<NUMBER> { return new Num(Double.parseDouble(t.toString())); }
-    | "(" e=expression() ")" { return e; }
+    | "(" e=comp() ")" { return e; }
+    | t = <ID> { return new Var(t.toString()); }
+    | t = <STRING> { return new ExpString(t.toString()); }
 }
-

@@ -1,0 +1,9 @@
+let 
+	var a:= 1 
+in 
+	print(a),
+	a:=2,
+	print(a),
+	a:="foo",
+	print(a)
+end

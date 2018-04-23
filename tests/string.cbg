@@ -2,10 +2,9 @@ let var foo := "foo"
 in
 print(foo + " " + "bar")
 end
+
+let var baz:=1 in print(baz) end
+
 print(if "foo" < "bar" then "foo" else "bar")
-print(if if 1 then 1 else 0 then 1 else 0)
 print(if ((if "foo" < "baz" then "foo" else "baz") < "baz") then "foo" else "baz")
 print("lol" == "lol")
-print(1+5)
-print("lol" <= "lol")
-

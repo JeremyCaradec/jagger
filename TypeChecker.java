@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class TypeChecker implements Visitor
 {
     public enum ExpType
@@ -5,10 +7,22 @@ public class TypeChecker implements Visitor
     	Double, String, Void;
     }
     private ExpType type;
+    private Scope scope;
+
+    public TypeChecker(Exp e, Scope scope)
+	{
+		this.scope = scope;
+		e.accept(this);
+	}
 
 	public TypeChecker(Exp e)
 	{
-		e.accept(this);
+		this(e, null);
+	}
+
+	public void setScope(Scope s)
+	{
+		scope =s ;
 	}
 
 	public void typeError(Exp e) throws TypeError
@@ -207,12 +221,32 @@ public class TypeChecker implements Visitor
 
 	public void visit(Var val)
 	{
-		Scope.getIdValue(val.getId()).accept(this);
-		val.setType(type);
+		scope.getIdValue(val.getId()).accept(this);
 	}
 
 	public void visit(ExpString val)
 	{
 		type = val.getType();
+	}
+
+	public void visit(PrintFunc val)
+	{
+		val.getExp().accept(this);
+	}
+
+	public void visit(Scope val)
+	{
+		scope = val;
+		ArrayList<Exp> arr = val.getInstructions();
+		for(Exp e:arr)
+			e.accept(this);
+		scope = scope.getParent();
+	}
+
+	public void visit(Affectation val)
+	{
+		val.getExp().accept(this);
+		if(val.getType() != ExpType.Void && val.getType() != type)
+			typeError(val);
 	}
 }

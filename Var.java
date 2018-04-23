@@ -5,6 +5,7 @@ public class Var extends Exp
 	public Var(String id)
 	{
 		this.id = id;
+		setType(TypeChecker.ExpType.Void);
 	}
 
 	public void accept(Visitor v)

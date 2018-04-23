@@ -1,9 +1,20 @@
-public class PrintFunc implements Ast
+public class PrintFunc extends Exp
 {
+	private Exp e;
+
 	public PrintFunc(Exp e)
 	{
-		new TypeChecker(e);
-		new PPrinter(e); 
-		System.out.println(" = " + new Eval(e).res_str());
+		setType(TypeChecker.ExpType.Void);
+		this.e = e;
+	}
+
+	public void accept(Visitor v)
+	{
+		v.visit(this);
+	}
+
+	public Exp getExp()
+	{
+		return e;
 	}
 }

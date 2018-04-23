@@ -1,13 +1,22 @@
+import java.util.ArrayList;
+
 public class Eval implements Visitor
 {
 	private double result;
 	private String res_str;
+	public Scope scope;
 
-	public Eval(Exp e)
+	public Eval(Exp e, Scope scope)
 	{
 		result = 0.0;
 		res_str = "";
+		this.scope = scope;
 		e.accept(this);
+	}
+
+	public Eval(Exp e)
+	{
+		this(e, null);
 	}
 
 	public double result()
@@ -18,6 +27,11 @@ public class Eval implements Visitor
 	public String res_str()
 	{
 		return res_str;
+	}
+
+	public void setScope(Scope s)
+	{
+		scope =s ;
 	}
 
 	public void visit(Add val)
@@ -245,7 +259,7 @@ public class Eval implements Visitor
 
 	public void visit(Var val)
 	{
-		Scope.getIdValue(val.getId()).accept(this);
+		scope.getIdValue(val.getId()).accept(this);
 		if(val.getType() == TypeChecker.ExpType.Double)
 			res_str = Double.toString(result);
 	}
@@ -253,5 +267,33 @@ public class Eval implements Visitor
 	public void visit(ExpString val)
 	{
 		res_str = val.getString();
+	}
+
+	public void visit(PrintFunc val)
+	{
+		val.getExp().accept(this);
+		if(val.getExp().getType() == TypeChecker.ExpType.Double)
+			res_str = Double.toString(result);
+		System.out.print(" = " + res_str);
+	}
+
+	public void visit(Scope val)
+	{
+		scope = val;
+		ArrayList<Exp> arr = val.getInstructions();
+		arr.get(0).accept(this);
+		for(int i=1; i<arr.size(); i++)
+			arr.get(i).accept(this);
+		scope = scope.getParent();
+
+	}
+
+	public void visit(Affectation val)
+	{
+		val.getExp().accept(this);
+		if(val.getExp().getType() == TypeChecker.ExpType.Double)
+			scope.affect(val.getId(), new Num(result));
+		else if(val.getExp().getType() == TypeChecker.ExpType.String)
+			scope.affect(val.getId(), new ExpString(res_str));
 	}
 }

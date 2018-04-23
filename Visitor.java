@@ -15,4 +15,7 @@ interface Visitor
 	public void visit(CondBranch v);
 	public void visit(Var v);
 	public void visit(ExpString v);
+	public void visit(PrintFunc v);
+	public void visit(Scope v);
+	public void visit(Affectation v);
 }

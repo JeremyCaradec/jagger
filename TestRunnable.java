@@ -18,7 +18,7 @@ public class TestRunnable implements Runnable
 		try 
 		{
 		    is = new FileInputStream(filename);
-		    Cabeg parser = new Cabeg(is);
+		    Jagger parser = new Jagger(is);
 		    parser.mainloop();
 		    is.close();
 

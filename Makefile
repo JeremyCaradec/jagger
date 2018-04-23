@@ -1,9 +1,8 @@
-default: j
 all: jj j
-jj: Cabeg.jj
-	javacc Cabeg.jj
+jj: Jagger.jj
+	javacc Jagger.jj
 j: *.java
-	javac *.java
+	javac -g *.java
 clean: 
 	rm *.class
 check: *.java
