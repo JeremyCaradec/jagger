@@ -5,6 +5,7 @@ public class ExpString extends Exp
 	public ExpString(String string)
 	{
 		this.string = string;
+		setType(TypeChecker.ExpType.String);
 	}
 
 	public void accept(Visitor v)

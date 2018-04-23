@@ -12,20 +12,28 @@ public class Scope implements Ast
 	Scope()
 	{
 		map = new HashMap<String, Exp>();
-		scopes.add(this);
-		curScope++;
+		enter();
 	}
 
 	public void addDeclaration(String s, Exp e)
 	{
-		map.putIfAbsent(s, e);
+		Exp newExp = null;
+		Eval eval;
+		new TypeChecker(e);
+		eval = new Eval(e);
+		if(e.getType() == TypeChecker.ExpType.Double)
+			newExp = new Num(eval.result());
+		else if(e.getType() == TypeChecker.ExpType.String)
+			newExp = new ExpString(eval.res_str());
+		map.putIfAbsent(s, newExp);
 	}
 
 	public static Exp getIdValue(String s)
 	{		
 		Exp e = null;
-		for(Scope scope:scopes)
+		for(int i=curScope; i >= 0; i--)
 		{
+			Scope scope = scopes.get(i);
 			if(scope.hasId(s))
 			{
 				e = scope.get(s);
@@ -43,6 +51,12 @@ public class Scope implements Ast
 	public Exp get(String s)
 	{
 		return map.get(s);
+	}
+
+	public void enter()
+	{
+		scopes.add(this);
+		curScope++;
 	}
 
 	public void exit()

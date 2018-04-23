@@ -7,4 +7,4 @@ j: *.java
 clean: 
 	rm *.class
 check: *.java
-			java Test
+	java Test

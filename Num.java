@@ -5,6 +5,7 @@ public class Num extends Exp
 	public Num(double d)
 	{
 		this.d = d;
+		setType(TypeChecker.ExpType.Double);
 	}
 	public void accept(Visitor v)
 	{

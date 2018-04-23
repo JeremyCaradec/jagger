@@ -184,7 +184,7 @@ public class TypeChecker implements Visitor
 
 	public void visit(Num val)
 	{
-		type = ExpType.Double;
+		type = val.getType();
 	}
 
 	public void visit(CondBranch val)
@@ -213,6 +213,6 @@ public class TypeChecker implements Visitor
 
 	public void visit(ExpString val)
 	{
-		type = ExpType.String;
+		type = val.getType();
 	}
 }

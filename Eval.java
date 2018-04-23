@@ -238,7 +238,7 @@ public class Eval implements Visitor
 		{
 			val.getE3().accept(this);
 		}
-		
+
 		if(val.getType() == TypeChecker.ExpType.Double)
 			res_str = Double.toString(result);
 	}
@@ -246,7 +246,8 @@ public class Eval implements Visitor
 	public void visit(Var val)
 	{
 		Scope.getIdValue(val.getId()).accept(this);
-		res_str = Double.toString(result);
+		if(val.getType() == TypeChecker.ExpType.Double)
+			res_str = Double.toString(result);
 	}
 
 	public void visit(ExpString val)

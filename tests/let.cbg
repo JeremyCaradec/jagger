@@ -1,2 +1,30 @@
-let in print(2<if 1 then 2 else 3) end
+let 
+	var a:= 1 
+in 
+	print(2<if a then 2 else 3)
+end
+
+print(-(-1))
+
+print(2>if(-(if 1 then -1 else 0)) then 1 else 0)
+
+print((if 1 then "bar" else "foo") < "baz")
+
+let 
+	var foo:=10
+	var bar:=foo+foo
+in
+	print(bar)
+end		
+
+let var i := 10
+in
+  print(i),
+  let 
+  	var i := i * i
+  in
+    print(i)
+  end,
+  print(i)
+end
 
